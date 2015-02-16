@@ -7,20 +7,31 @@
 
 // For debug.
 // M100 IP Address.
-var devIpAddr = "192.168.100.14:4035";
+var devIpAddr = "192.168.101.16:4035";
 // Update Counter.
 var counter = 40;
 // Update Interval (mSec).
 var updateInterval = 500
 // timer variable.
 var timer = null;
+// event control.
+var isEvent = 0;
+// Processing control.
+var isProcess = 0;
+// Host IP Address.
+var HostIpAddr = "192.168.101.14:4035";
 
 
 // Setting parameter.
+/** Local Client ID. */
+var HostCurrentClientId = null;
+/** HostAccessTonen. */
+var HostAccessToken = null;
 var M100IpAddr = null;
 var M100DemoCurrentClientId = null;
 var M100DemoAccessToken = null;
 var M100ServiceID = null;
+var HealthServiceID = null;
 var M100EiNormalMin = null;
 var M100EiNormalMax = null;
 var M100EiNormalColor = null;
@@ -54,7 +65,7 @@ function showM100Demo(serviceId) {
     readParam();
 
     var btnStr = "";
-        btnStr += '<center><input data-icon="grid" data-inline="true" data-mini="true" onclick="javascript:M100DemoAuthorization();" type="button" value="accessToken" /></center>';
+        btnStr += '<center><input data-icon="grid" data-inline="true" data-mini="true" onclick="javascript:DemoAuthorization();" type="button" value="accessToken" /></center>';
 
     reloadHeader(btnStr);
 
@@ -227,6 +238,10 @@ function showDeviceMioSetup(serviceId){
  * @param {String}serviceId サービスID
  */
 function doDeviceMioSetup(serviceId){
+    var result = HostIpAddr.split(":");
+    var ip = result[0];
+    if (DEBUG) console.log("ip : " + ip);
+    dConnect.setHost(ip);
     var builder = new dConnect.URIBuilder();
     builder.setProfile("system");
     var uri = builder.build();
@@ -325,8 +340,10 @@ function showHRValue(serviceId){
     
     var str = "";
     str += '<form name="upForm">';
-    str += '<input type="button" name="startButton" id="startButton" value="Start" onclick="doStartHeartRate();"/>';
-    str += '<input type="button" name="stopButton" id="stopButton" value="Stop" onclick="stopInterval();"/>';
+    str += '<input type="button" name="incStartButton" id="incStartButton" value="Start (Incremental)" onclick="doStartHeartRate(1);"/>';
+    str += '<input type="button" name="incStopButton" id="incStopButton" value="Stop (Incremental)" onclick="stopInterval(1);"/>';
+    str += '<input type="button" name="eventStartButton" id="eventStartButton" value="Start (Event)" onclick="doStartHeartRate(0);"/>';
+    str += '<input type="button" name="eventStopButton" id="eventStopButton" value="Stop (Event)" onclick="stopInterval(0);"/>';
     str += 'Heart Rate<br>';
     str += '<center><canvas id="canvas" width="' + width + '" height="' + height + '" ></canvas></center>';
     str += '</form>';
@@ -380,11 +397,15 @@ function doHRValueBack(serviceId, sessionKey){
  * Heart Rate Event Regist
  */
 function doHeartRateRegist(serviceId, sessionKey) {
+    var result = HostIpAddr.split(":");
+    var ip = result[0];
+    if (DEBUG) console.log("ip : " + ip);
+    dConnect.setHost(ip);
     var builder = new dConnect.URIBuilder();
     builder.setProfile("health");
     builder.setAttribute("heartrate");
     builder.setServiceId(serviceId);
-    builder.setAccessToken(accessToken);
+    builder.setAccessToken(HostAccessToken);
     builder.setSessionKey(sessionKey);
     var uri = builder.build();
     if (DEBUG) console.log("Uri: " + uri);
@@ -406,12 +427,15 @@ function doHeartRateRegist(serviceId, sessionKey) {
  * Heart Rate Event Unregist
  */
 function doHeartRateUnregist(serviceId, sessionKey) {
-
+    var result = HostIpAddr.split(":");
+    var ip = result[0];
+    if (DEBUG) console.log("ip : " + ip);
+    dConnect.setHost(ip);
     var builder = new dConnect.URIBuilder();
     builder.setProfile("health");
     builder.setAttribute("heartrate");
     builder.setServiceId(serviceId);
-    builder.setAccessToken(accessToken);
+    builder.setAccessToken(HostAccessToken);
     builder.setSessionKey(sessionKey);
     var uri = builder.build();
     if (DEBUG) console.log("Uri : "+uri);
@@ -432,7 +456,7 @@ function doSetM100Parameter() {
     document.cookie = "M100IpAddr=" + encodeURIComponent(M100IpAddr);
     if (DEBUG) console.log("length:"+document.cookie.length);
     if (DEBUG) console.log("cookie:"+document.cookie);
-    M100DemoAuthorization();
+    DemoAuthorization();
 }
 
 /**
@@ -498,10 +522,17 @@ function doSetParameter() {
 /**
  * Start Heart Rate
  */
-function doStartHeartRate() {
-
-    if (timer == null) {
-        searchM100();
+function doStartHeartRate(flag) {
+    if (DEBUG) console.log("isProcess:" + isProcess + " flag:" + flag + " timer:" + timer + " isEvent:" + isEvent);
+    if ((isProcess == 0 && flag == 1 && timer == null) ||
+        (isProcess == 0 && flag == 0 && isEvent == 0)    ) {
+        isProcess = 1;
+        if (flag == 1) {
+            searchM100(flag);
+        } else {
+            searchHealth(flag);
+//            searchM100(flag);
+        }
     } else {
         alert("Already started.");
     }
@@ -597,6 +628,13 @@ function canvasDraw(heartRate) {
 /**
  * Get Local OAuth accesstoken.
  */
+function DemoAuthorization(){
+//    M100DemoAuthorization();
+    HostDemoAuthorization();
+}
+/**
+ * Get Local OAuth accesstoken.
+ */
 function M100DemoAuthorization(){
     var result = M100IpAddr.split(":");
     var ip = result[0];
@@ -604,7 +642,7 @@ function M100DemoAuthorization(){
     dConnect.setHost(ip);
     var scopes = Array("servicediscovery", "battery", "connect", "deviceorientation", "file_descriptor", "file", "media_player",
                     "mediastream_recording", "notification", "phone", "proximity", "settings", "vibration", "light",
-                    "remote_controller", "drive_controller", "mhealth", "sphero", "dice", "temperature","camera", "canvas", "keyevent");
+                    "remote_controller", "drive_controller", "mhealth", "sphero", "dice", "temperature","camera", "canvas", "health");
         dConnect.authorization('http://www.deviceconnect.org/demo/', scopes, 'サンプル',
             function(clientId, clientSecret, newAccessToken) {
                 // Client ID
@@ -614,7 +652,8 @@ function M100DemoAuthorization(){
                 M100DemoAccessToken = newAccessToken;
                 
                 // debug log
-                console.log("accessToken:" + M100DemoAccessToken);
+                console.log("M100DemoCurrentClientId:" + M100DemoCurrentClientId);
+                console.log("M100DemoAccessToken:" + M100DemoAccessToken);
 
                 // add cookie
                 document.cookie = 'M100DemoAccessToken' + ip + '=' + encodeURIComponent(M100DemoAccessToken);
@@ -623,7 +662,44 @@ function M100DemoAuthorization(){
                     dConnect.disconnectWebSocket();
                 }
                 dConnect.connectWebSocket(clientId, function(errorCode, errorMessage) {});
+        },
+        function(errorCode, errorMessage) {
+              alert("Failed to get accessToken.");
+        });
+}
 
+/**
+ * Get Local OAuth accesstoken.
+ */
+function HostDemoAuthorization(){
+    var result = HostIpAddr.split(":");
+    var ip = result[0];
+    if (DEBUG) console.log("ip : " + ip);
+    dConnect.setHost(ip);
+    var scopes = Array("servicediscovery", "battery", "connect", "deviceorientation", "file_descriptor", "file", "media_player",
+                    "mediastream_recording", "notification", "phone", "proximity", "settings", "vibration", "light",
+                    "remote_controller", "drive_controller", "mhealth", "sphero", "dice", "temperature","camera", "canvas", "health");
+        dConnect.authorization('http://www.deviceconnect.org/demo/', scopes, 'サンプル',
+            function(clientId, clientSecret, newAccessToken) {
+                // Client ID
+                HostCurrentClientId = clientId;
+                
+                // accessToken
+                HostAccessToken = newAccessToken;
+                
+                // debug log
+                console.log("HostCurrentClientId:" + HostCurrentClientId);
+                console.log("HostAccessToken:" + HostAccessToken);
+
+                // add cookie
+                document.cookie = 'HostAccessToken' + ip + '=' + encodeURIComponent(HostAccessToken);
+
+                if (dConnect.isConnectedWebSocket()) {
+                    dConnect.disconnectWebSocket();
+                }
+                dConnect.connectWebSocket(clientId, function(errorCode, errorMessage) {});
+
+                M100DemoAuthorization();
         },
         function(errorCode, errorMessage) {
               alert("Failed to get accessToken.");
@@ -633,7 +709,7 @@ function M100DemoAuthorization(){
 /**
  * Search of M100.
  */
-function searchM100() {
+function searchM100(flag) {
 
     var result = M100IpAddr.split(":");
     var ip = result[0];
@@ -649,13 +725,41 @@ function searchM100() {
                 if(DEBUG) console.log('M100DemoCurrentClientId:' + M100DemoCurrentClientId);
 
                 isDrawable = 1;
-//                doHeartRateRegist(M100ServiceID, M100DemoCurrentClientId);
-//                canvasDraw();
-//                timer = setInterval('canvasDraw()', updateInterval);
-                timer = setInterval('debugDrawProcess()', updateInterval);
+                if (flag == 0) {
+//                    doHeartRateRegist(M100ServiceID, M100DemoCurrentClientId);
+                    doHeartRateRegist(HealthServiceID, HostCurrentClientId);
+                    isEvent = 1;
+                } else {
+                    timer = setInterval('debugDrawProcess()', updateInterval);
+                }
                 break;
             }
         }
+    }, function(readyState, status) {
+    });
+}
+
+/**
+ * Search of Health.
+ */
+function searchHealth(flag) {
+
+    var result = HostIpAddr.split(":");
+    var ip = result[0];
+    if (DEBUG) console.log("ip : " + ip);
+    dConnect.setHost(ip);
+    dConnect.discoverDevices(HostAccessToken, function(obj){
+        if(DEBUG) console.log("response: ", obj);
+
+        for (var i = 0; i < obj.services.length; i++) {
+            if(DEBUG) console.log("services: ", obj.services[i].name);
+            if(obj.services[i].name == "MIO GLOBAL") {
+                HealthServiceID = obj.services[i].id;
+                if(DEBUG) console.log('HealthServiceID:' + HealthServiceID);
+                break;
+            }
+        }
+        searchM100(flag);
     }, function(readyState, status) {
     });
 }
@@ -667,8 +771,13 @@ function debugDrawProcess() {
     }
 }
 
-function stopInterval() {
-/*    doHeartRateUnregist(M100ServiceId, M100DemoCurrentClientId);*/
-    clearInterval(timer);
-    timer = null;
+function stopInterval(flag) {
+    if (flag == 0) {
+        doHeartRateUnregist(HealthServiceID, HostCurrentClientId);
+        isEvent = 0;
+    } else {
+        clearInterval(timer);
+        timer = null;
+    }
+    isProcess = 0;
 }

@@ -56,7 +56,8 @@ function init() {
             authorization();
         }
     });
-    dConnect.setAntiSpoofing(true);
+//    dConnect.setAntiSpoofing(true);
+    dConnect.setAntiSpoofing(false);
     dConnect.startManager();
 }
 
@@ -64,6 +65,30 @@ function init() {
  * Demo Page 初期化処理.
  */
 function demoinit() {
+    if (accessToken == null) {
+        // 接続先ipアドレスを取得(指定がない場合は、localhost)
+        ip = getIpString();
+
+        // accessTokenをcookieから取得
+        accessToken = getCookie("accessToken" + ip);
+
+//        dConnect.setLaunchListener(function(version) {
+//            if (DEBUG) console.log("Device Connect Manager has launched: version=" + version);
+            if(accessToken == null){
+                authorization();
+            }
+//        });
+//        dConnect.setAntiSpoofing(true);
+//        dConnect.setAntiSpoofing(false);
+//        dConnect.startManager();
+    }
+
+    // 接続先IPアドレスをページに表示
+    $('#host').html("connecting:" + ip);
+
+    // Tokenをページに表示
+    $('#token').html("accessToken:" + accessToken);
+
     showM100Demo("");
 }
 
