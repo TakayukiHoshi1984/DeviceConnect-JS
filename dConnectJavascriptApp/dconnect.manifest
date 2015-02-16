@@ -28,6 +28,7 @@ CACHE MANIFEST
 ./js/profile/sphero.js
 ./js/profile/camera.js
 ./js/profile/canvas.js
+./js/profile/m100demo.js
 ./js/sdk/dconnectsdk-2.0.0.js
 ./js/sdk/util.js
 ./js/jquery.mobile-1.4.2.min.map

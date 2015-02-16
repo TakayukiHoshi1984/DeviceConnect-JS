@@ -30,8 +30,8 @@
     <script src="./js/profile/sphero.js" type="text/javascript"></script>
     <script src="./js/profile/camera.js" type="text/javascript"></script>
     <script src="./js/profile/mhealth.js" type="text/javascript"></script>
+    <script src="./js/profile/keyevent.js" type="text/javascript"></script>
     <script src="./js/profile/canvas.js" type="text/javascript"></script>
-    <script src="./js/profile/health.js" type="text/javascript"></script>
     <script src="./js/profile/m100demo.js" type="text/javascript"></script>
     <script src="./js/sdk/util.js" type="text/javascript"></script>
     <script src="./js/demo.js" type="text/javascript"></script>
@@ -58,28 +58,11 @@
     </script>
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
 </head>
-<body onload="init();">
+<body onload="demoinit();">
     <div id="home" data-role="page">
         <div data-role="header" data-theme="b">
-            <a data-ajax="false" data-icon="home" href="../index.html">Close</a>
-            <a data-ajax="false" data-icon="gear" href="#setting">Setting</a>
-            <h1 id="version"></h1>
-        </div>
-<!--            <input type="button" onclick="javascript:execM100Demo();" value="M100 Demonstration" /> -->
-            <a data-ajax="false" href="./m100demo.html">M100 Demonstration</a>
-<!--        <div id="title" data-role="header" data-theme="b"></div> -->
-        <div style="text-align:center"><br>
-            <!-- 接続先 -->
-            <div id="host" style="font-size:xx-small"></div>
-            <!-- AccessToken -->
-            <div id="token" style="font-size:xx-small"></div>
-
-            <div data-role="controlgroup" data-type="horizontal">
-                <input data-icon="gear" data-inline="true" data-mini="true" onclick="javascript:checkDeviceConnect();" type="button" value="Check" />
-                <input data-icon="grid" data-inline="true" data-mini="true" onclick="javascript:authorization();" type="button" value="accessToken" />
-            </div>
-
-            <input data-icon="search" onclick="javascript:searchDevice();" type="button" value="Search Device" />
+            <a data-ajax="false" data-icon="home" href="./index.html">Close</a>
+            <h1 id="demotitle">M100 Demonstration</h1>
         </div>
         <div id="title" data-role="header" data-theme="b"></div>
         

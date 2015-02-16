@@ -61,6 +61,13 @@ function init() {
 }
 
 /**
+ * Demo Page 初期化処理.
+ */
+function demoinit() {
+    showM100Demo("");
+}
+
+/**
  * Device Connect Managerが起動していることを確認する.
  */
 function checkDeviceConnect() {
@@ -225,4 +232,11 @@ function searchProfile(serviceId, profile) {
     } else if (profile === "health") {
         showHealth(serviceId);
     }
+}
+
+/**
+ * Execute M100 Demonstration.
+ */
+function execM100Demo() {
+        showM100Demo("T.B.D");
 }
