@@ -7,7 +7,9 @@
 
 // For debug.
 // M100 IP Address.
-var devIpAddr = "192.168.101.16:4035";
+var devIpAddr = "192.168.101.16";
+// M100 Port.
+var devPort = "4035";
 // Update Counter.
 var counter = 40;
 // Update Interval (mSec).
@@ -18,16 +20,20 @@ var timer = null;
 var isEvent = 0;
 // Processing control.
 var isProcess = 0;
-// Host IP Address.
-var HostIpAddr = "192.168.101.14:4035";
 
 
 // Setting parameter.
+// Host IP Address.
+var HostIpAddr = "192.168.101.14";
+//var HostIpAddr = "localhost";
+// Host Port.
+var HostPort = "4035";
 /** Local Client ID. */
 var HostCurrentClientId = null;
 /** HostAccessTonen. */
 var HostAccessToken = null;
 var M100IpAddr = null;
+var M100Port = null;
 var M100DemoCurrentClientId = null;
 var M100DemoAccessToken = null;
 var M100ServiceID = null;
@@ -51,10 +57,29 @@ var M100EiTrainingColor = null;
 var isCookie = 0;
 var isDrawable = 0;
 
-var width = 150;
-var height = 200;
-var PosX = 10;
-var PosY = 60;
+var width = 430;
+var height = 225;
+var PosX = 45;
+var PosY = 150;
+
+/**
+ * Demo Page 初期化処理.
+ */
+function demoinit() {
+    // 接続先IPアドレスをページに表示
+    $('#host').html("Host connecting:" + HostIpAddr);
+
+    // Tokenをページに表示
+    $('#hosttoken').html("Host accessToken:" + HostAccessToken);
+
+    // M100アドレスをページに表示
+    $('#m100').html("M100 connecting:" + M100IpAddr);
+
+    // Tokenをページに表示
+    $('#m100token').html("M100 accessToken:" + M100DemoAccessToken);
+
+    showM100Demo("");
+}
 
 /** 
  * M100 Demonstration
@@ -90,6 +115,7 @@ function readParam() {
         isCookie = 0;
 
         if (M100IpAddr          == null) M100IpAddr          = devIpAddr;
+        if (M100Port            == null) M100Port            = devPort;
         if (M100EiNormalMin     == null) M100EiNormalMin     = "40";
         if (M100EiNormalMax     == null) M100EiNormalMax     = "90";
         if (M100EiNormalColor   == null) M100EiNormalColor   = "#00fdff";
@@ -112,9 +138,11 @@ function readParam() {
 　　　   M100IpAddr = getCookie('M100IpAddr');
         if (M100IpAddr == null) M100IpAddr = devIpAddr;
 
-        var result = M100IpAddr.split(":");
-        var token = 'M100DemoAccessToken' + result[0];
+        var token = 'M100DemoAccessToken' + M100IpAddr;
         M100DemoAccessToken = getCookie(token);
+
+　　　   M100Port = getCookie('M100Port');
+        if (M100Port == null) M100Port = devPort;
 
         M100EiNormalMin = getCookie("M100EiNormalMin");
         if (M100EiNormalMin == null) M100EiNormalMin = "40";
@@ -204,6 +232,8 @@ function showDeviceM100Setup(serviceId){
     str += '<form name="M100ParamForm">';
     str += 'M100 IP Address<br>';
     str += '<input type="text" id="M100IpAddr" width="100%" value="' + M100IpAddr + '"/>';
+    str += 'M100 Port<br>';
+    str += '<input type="text" id="M100Port" width="100%" value="' + M100Port + '"/>';
     str += '<input type="button" name="setButton" id="setButton" value="Set" onclick="doSetM100Parameter();"/>';
     str += '</form>';
     reloadContent(str);
@@ -238,10 +268,8 @@ function showDeviceMioSetup(serviceId){
  * @param {String}serviceId サービスID
  */
 function doDeviceMioSetup(serviceId){
-    var result = HostIpAddr.split(":");
-    var ip = result[0];
-    if (DEBUG) console.log("ip : " + ip);
-    dConnect.setHost(ip);
+    if (DEBUG) console.log("ip : " + HostIpAddr);
+    dConnect.setHost(HostIpAddr);
     var builder = new dConnect.URIBuilder();
     builder.setProfile("system");
     var uri = builder.build();
@@ -397,10 +425,8 @@ function doHRValueBack(serviceId, sessionKey){
  * Heart Rate Event Regist
  */
 function doHeartRateRegist(serviceId, sessionKey) {
-    var result = HostIpAddr.split(":");
-    var ip = result[0];
-    if (DEBUG) console.log("ip : " + ip);
-    dConnect.setHost(ip);
+    if (DEBUG) console.log("ip : " + HostIpAddr);
+    dConnect.setHost(HostIpAddr);
     var builder = new dConnect.URIBuilder();
     builder.setProfile("health");
     builder.setAttribute("heartrate");
@@ -427,10 +453,8 @@ function doHeartRateRegist(serviceId, sessionKey) {
  * Heart Rate Event Unregist
  */
 function doHeartRateUnregist(serviceId, sessionKey) {
-    var result = HostIpAddr.split(":");
-    var ip = result[0];
-    if (DEBUG) console.log("ip : " + ip);
-    dConnect.setHost(ip);
+    if (DEBUG) console.log("ip : " + HostIpAddr);
+    dConnect.setHost(HostIpAddr);
     var builder = new dConnect.URIBuilder();
     builder.setProfile("health");
     builder.setAttribute("heartrate");
@@ -454,6 +478,9 @@ function doSetM100Parameter() {
     if (DEBUG) console.log(document.M100ParamForm.elements[0].value);
     M100IpAddr = document.M100ParamForm.elements[0].value;
     document.cookie = "M100IpAddr=" + encodeURIComponent(M100IpAddr);
+    if (DEBUG) console.log(document.M100ParamForm.elements[1].value);
+    M100Port = document.M100ParamForm.elements[1].value;
+    document.cookie = "M100Port=" + encodeURIComponent(M100Port);
     if (DEBUG) console.log("length:"+document.cookie.length);
     if (DEBUG) console.log("cookie:"+document.cookie);
     DemoAuthorization();
@@ -531,7 +558,6 @@ function doStartHeartRate(flag) {
             searchM100(flag);
         } else {
             searchHealth(flag);
-//            searchM100(flag);
         }
     } else {
         alert("Already started.");
@@ -550,7 +576,7 @@ function sendImageBinary(blob) {
 
     $.ajax({
         type:'POST',
-        url:'http://' + M100IpAddr + '/gotapi/canvas/drawimage',
+        url:'http://' + M100IpAddr + ':' + M100Port + '/gotapi/canvas/drawimage',
         data:formData,
         contentType:false,
         processData:false,
@@ -570,7 +596,7 @@ function canvasDraw(heartRate) {
     var heartText = " ♥";
 
     context.beginPath();
-    context.clearRect(0, 0, height, width);
+    context.clearRect(0, 0, width, height);
 
     // Set background color.
     if (heartRate >= M100EiNormalMin && heartRate <= M100EiNormalMax) {
@@ -589,23 +615,24 @@ function canvasDraw(heartRate) {
     }
 
     // Canvas clear.
-    context.fillRect(0, 0, height, width);
+    context.fillRect(0, 0, width, height);
     context.stroke();
     context.restore();
     context.save();
 
     // Draw heart rate.
     context.beginPath();
-    context.font = "18pt Arial";
+    context.font = "96pt Arial";
     context.fillStyle = 'rgb(0, 0, 0)'; 
     if (heartRate < 100) {
-        context.fillText(" " + heartRate, PosX+16, PosY+16);
+        context.fillText(" " + heartRate, PosX, PosY);
     } else {
-        context.fillText(heartRate, PosX+16, PosY+16);
+        context.fillText(heartRate, PosX, PosY);
     }
-    context.fillText(orderText, PosX+60, PosY+16);
+    context.font = "36pt Arial";
+    context.fillText(orderText, PosX + 225, PosY);
     context.fillStyle = 'rgb(255, 0, 0)'; 
-    context.fillText(heartText, PosX+110, PosY+16);
+    context.fillText(heartText, PosX + 320, PosY);
     context.restore();
     context.save();
 
@@ -636,10 +663,9 @@ function DemoAuthorization(){
  * Get Local OAuth accesstoken.
  */
 function M100DemoAuthorization(){
-    var result = M100IpAddr.split(":");
-    var ip = result[0];
-    if (DEBUG) console.log("ip : " + ip);
-    dConnect.setHost(ip);
+    if (DEBUG) console.log("ip : " + M100IpAddr);
+    $('#m100').html("M100 connecting:" + M100IpAddr);
+    dConnect.setHost(M100IpAddr);
     var scopes = Array("servicediscovery", "battery", "connect", "deviceorientation", "file_descriptor", "file", "media_player",
                     "mediastream_recording", "notification", "phone", "proximity", "settings", "vibration", "light",
                     "remote_controller", "drive_controller", "mhealth", "sphero", "dice", "temperature","camera", "canvas", "health");
@@ -650,18 +676,14 @@ function M100DemoAuthorization(){
                 
                 // accessToken
                 M100DemoAccessToken = newAccessToken;
+                $('#m100token').html("M100 accessToken:" + M100DemoAccessToken);
                 
                 // debug log
                 console.log("M100DemoCurrentClientId:" + M100DemoCurrentClientId);
                 console.log("M100DemoAccessToken:" + M100DemoAccessToken);
 
                 // add cookie
-                document.cookie = 'M100DemoAccessToken' + ip + '=' + encodeURIComponent(M100DemoAccessToken);
-
-                if (dConnect.isConnectedWebSocket()) {
-                    dConnect.disconnectWebSocket();
-                }
-                dConnect.connectWebSocket(clientId, function(errorCode, errorMessage) {});
+                document.cookie = 'M100DemoAccessToken' + M100IpAddr + '=' + encodeURIComponent(M100DemoAccessToken);
         },
         function(errorCode, errorMessage) {
               alert("Failed to get accessToken.");
@@ -672,10 +694,9 @@ function M100DemoAuthorization(){
  * Get Local OAuth accesstoken.
  */
 function HostDemoAuthorization(){
-    var result = HostIpAddr.split(":");
-    var ip = result[0];
-    if (DEBUG) console.log("ip : " + ip);
-    dConnect.setHost(ip);
+    if (DEBUG) console.log("ip : " + HostIpAddr);
+    $('#host').html("Host connecting:" + HostIpAddr);
+    dConnect.setHost(HostIpAddr);
     var scopes = Array("servicediscovery", "battery", "connect", "deviceorientation", "file_descriptor", "file", "media_player",
                     "mediastream_recording", "notification", "phone", "proximity", "settings", "vibration", "light",
                     "remote_controller", "drive_controller", "mhealth", "sphero", "dice", "temperature","camera", "canvas", "health");
@@ -686,13 +707,14 @@ function HostDemoAuthorization(){
                 
                 // accessToken
                 HostAccessToken = newAccessToken;
+                $('#hosttoken').html("Host accessToken:" + HostAccessToken);
                 
                 // debug log
                 console.log("HostCurrentClientId:" + HostCurrentClientId);
                 console.log("HostAccessToken:" + HostAccessToken);
 
                 // add cookie
-                document.cookie = 'HostAccessToken' + ip + '=' + encodeURIComponent(HostAccessToken);
+                document.cookie = 'HostAccessToken' + HostIpAddr + '=' + encodeURIComponent(HostAccessToken);
 
                 if (dConnect.isConnectedWebSocket()) {
                     dConnect.disconnectWebSocket();
@@ -710,11 +732,8 @@ function HostDemoAuthorization(){
  * Search of M100.
  */
 function searchM100(flag) {
-
-    var result = M100IpAddr.split(":");
-    var ip = result[0];
-    if (DEBUG) console.log("ip : " + ip);
-    dConnect.setHost(ip);
+    if (DEBUG) console.log("ip : " + M100IpAddr);
+    dConnect.setHost(M100IpAddr);
     dConnect.discoverDevices(M100DemoAccessToken, function(obj){
         if(DEBUG) console.log("response: ", obj);
 
@@ -726,7 +745,6 @@ function searchM100(flag) {
 
                 isDrawable = 1;
                 if (flag == 0) {
-//                    doHeartRateRegist(M100ServiceID, M100DemoCurrentClientId);
                     doHeartRateRegist(HealthServiceID, HostCurrentClientId);
                     isEvent = 1;
                 } else {
@@ -743,11 +761,8 @@ function searchM100(flag) {
  * Search of Health.
  */
 function searchHealth(flag) {
-
-    var result = HostIpAddr.split(":");
-    var ip = result[0];
-    if (DEBUG) console.log("ip : " + ip);
-    dConnect.setHost(ip);
+    if (DEBUG) console.log("ip : " + HostIpAddr);
+    dConnect.setHost(HostIpAddr);
     dConnect.discoverDevices(HostAccessToken, function(obj){
         if(DEBUG) console.log("response: ", obj);
 
