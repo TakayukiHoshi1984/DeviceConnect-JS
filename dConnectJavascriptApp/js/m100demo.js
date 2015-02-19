@@ -559,6 +559,7 @@ function doSetDefaultParameter() {
     document.ParamForm.elements[12].value = "151";
     document.ParamForm.elements[13].value = "165";
     document.ParamForm.elements[14].value = "#ff2600";
+    reloadContent();
     alert("Set Default.");
 }
 
