@@ -371,6 +371,7 @@ function showHRParamSetup(serviceId){
     str += '</div>';
     str += '<input id="EiTrainingColor" name="EiTrainingColor" type="color" value="' + M100EiTrainingColor + '"/>';
 
+    str += '<input type="button" name="defaultButton" id="defaultButton" value="Default" onclick="doSetDefaultParameter();"/>';
     str += '<input type="button" name="setButton" id="setButton" value="Set" onclick="doSetParameter();"/>';
     str += '</form>';
     reloadContent(str);
@@ -393,10 +394,10 @@ function showHRValue(serviceId){
     
     var str = "";
     str += '<form name="upForm">';
-    str += '<input type="button" name="incStartButton" id="incStartButton" value="Start (Incremental)" onclick="doStartHeartRate(1);"/>';
-    str += '<input type="button" name="incStopButton" id="incStopButton" value="Stop (Incremental)" onclick="stopInterval(1);"/>';
     str += '<input type="button" name="eventStartButton" id="eventStartButton" value="Start (Event)" onclick="doStartHeartRate(0);"/>';
     str += '<input type="button" name="eventStopButton" id="eventStopButton" value="Stop (Event)" onclick="stopInterval(0);"/>';
+    str += '<input type="button" name="incStartButton" id="incStartButton" value="Start (Incremental)" onclick="doStartHeartRate(1);"/>';
+    str += '<input type="button" name="incStopButton" id="incStopButton" value="Stop (Incremental)" onclick="stopInterval(1);"/>';
     str += 'Heart Rate<br>';
     str += '<center><canvas id="canvas" width="' + width + '" height="' + height + '" ></canvas></center>';
     str += '</form>';
@@ -539,6 +540,29 @@ function doSetM100Parameter() {
 }
 
 /**
+ * Set Default Parameter
+ */
+function doSetDefaultParameter() {
+    // Set default value
+    document.ParamForm.elements[0].value = "40";
+    document.ParamForm.elements[1].value = "90";
+    document.ParamForm.elements[2].value = "#00fdff";
+    document.ParamForm.elements[3].value = "91";
+    document.ParamForm.elements[4].value = "110";
+    document.ParamForm.elements[5].value = "#00f900";
+    document.ParamForm.elements[6].value = "111";
+    document.ParamForm.elements[7].value = "130";
+    document.ParamForm.elements[8].value = "#ff9300";
+    document.ParamForm.elements[9].value = "131";
+    document.ParamForm.elements[10].value = "150";
+    document.ParamForm.elements[11].value = "#ff40ff";
+    document.ParamForm.elements[12].value = "151";
+    document.ParamForm.elements[13].value = "165";
+    document.ParamForm.elements[14].value = "#ff2600";
+    alert("Set Default.");
+}
+
+/**
  * Set Parameter
  */
 function doSetParameter() {
@@ -563,7 +587,7 @@ function doSetParameter() {
     }
 
     // add cookie
-    M100EiNormalMin= document.ParamForm.elements[0].value;
+    M100EiNormalMin = document.ParamForm.elements[0].value;
     document.cookie = "M100EiNormalMin=" + encodeURIComponent(M100EiNormalMin);
     M100EiNormalMax = document.ParamForm.elements[1].value;
     document.cookie = "M100EiNormalMax=" + encodeURIComponent(M100EiNormalMax);
@@ -826,6 +850,10 @@ function searchHealth(flag) {
                 if(DEBUG) console.log('HealthServiceID:' + HealthServiceID);
                 break;
             }
+        }
+        if (i == obj.services.length) {
+            alert("Health Profile not found.");
+            return;
         }
         searchM100(flag);
     }, function(readyState, status) {
