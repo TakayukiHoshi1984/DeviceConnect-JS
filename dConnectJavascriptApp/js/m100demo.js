@@ -7,7 +7,7 @@
 
 // For debug.
 // M100 IP Address.
-var devIpAddr = "192.168.101.16";
+var devIpAddr = "192.168.10.18";
 // M100 Port.
 var devPort = "4035";
 // Update Counter.
@@ -24,7 +24,7 @@ var isProcess = 0;
 
 // Setting parameter.
 // Host IP Address.
-var HostIpAddr = "192.168.101.14";
+var HostIpAddr = "192.168.10.17";
 //var HostIpAddr = "localhost";
 // Host Port.
 var HostPort = "4035";
@@ -280,7 +280,7 @@ function doDeviceMioSetup(serviceId){
         if (DEBUG) console.log("Response: ", json);
         for (var i = 0; i < json.plugins.length; i++) {
         if (DEBUG) console.log("id : " + json.plugins[i].id + " name : " + json.plugins[i].name);
-        if (json.plugins[i].name == "BLE(HeartRate)デバイスプラグイン") {
+        if (json.plugins[i].name == "HeartRate(BLE)デバイスプラグイン") {
                 launchDevicePlugin(json.plugins[i].id);
                 break;
             }

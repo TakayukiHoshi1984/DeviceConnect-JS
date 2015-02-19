@@ -57,8 +57,7 @@ function init() {
         }
     });
 //    dConnect.setAntiSpoofing(true);
-    dConnect.setAntiSpoofing(false);
-    dConnect.startManager();
+//    dConnect.startManager();
 }
 
 /**

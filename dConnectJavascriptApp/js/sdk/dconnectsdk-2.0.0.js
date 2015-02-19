@@ -1511,7 +1511,9 @@ var dConnect = (function(parent, global) {
                 for (var key in header) {
                     xhr.setRequestHeader(key.toLowerCase(), header[key]);
                 }
-
+                if (location.origin === 'file://' || location.origin == 'null') {
+                    xhr.setRequestHeader('X-GotAPI-Origin', location.href);
+                }
                 xhr.send(data);
             }
             // HEADERS_RECEIVED: send() が呼び出され、ヘッダーとステータスが通った。
