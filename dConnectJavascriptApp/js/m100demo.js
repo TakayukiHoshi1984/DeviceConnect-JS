@@ -7,7 +7,7 @@
 
 // For debug.
 // M100 IP Address.
-var devIpAddr = "192.168.10.18";
+var devIpAddr = "192.168.1.155";
 // M100 Port.
 var devPort = "4035";
 // Update Counter.
@@ -24,8 +24,7 @@ var isProcess = 0;
 
 // Setting parameter.
 // Host IP Address.
-var HostIpAddr = "192.168.10.17";
-//var HostIpAddr = "localhost";
+var HostIpAddr = "localhost";
 // Host Port.
 var HostPort = "4035";
 /** Local Client ID. */
@@ -207,10 +206,36 @@ function showHRDeviceSetup(serviceId){
     reloadFooter(btnStr);
     
     var str = "";
+    str += '<li><a href="javascript:showDeviceHostSetup(\'' + serviceId + '\');" >Host Setup</a></li>';
     str += '<li><a href="javascript:showDeviceM100Setup(\'' + serviceId + '\');" >M100 Setup</a></li>';
-/*    str += '<li><a href="javascript:showDeviceMioSetup(\'' + serviceId + '\');" >Mio Alpha Setup</a></li>';*/
     str += '<li><a href="javascript:doDeviceMioSetup(\'' + serviceId + '\');" >Mio Alpha Setup</a></li>';
     reloadList(str);
+}
+
+/**
+ * Show Device Host Setup
+ *
+ * @param {String}serviceId サービスID
+ */
+function showDeviceHostSetup(serviceId){
+    initAll();
+    setTitle("Host Setup");
+
+    var sessionKey = HostCurrentClientId;
+
+    var btnStr = getBackButton('Device Setup Top', 'doHostSetupBack', serviceId, sessionKey);
+    reloadHeader(btnStr);
+    reloadFooter(btnStr);
+    
+    var str = "";
+    str += '<form name="HostParamForm">';
+    str += 'Host IP Address<br>';
+    str += '<input type="text" id="HostIpAddr" width="100%" value="' + HostIpAddr + '"/>';
+    str += 'Host Port<br>';
+    str += '<input type="text" id="HostPort" width="100%" value="' + HostPort + '"/>';
+    str += '<input type="button" name="setButton" id="setButton" value="Set" onclick="doSetHostParameter();"/>';
+    str += '</form>';
+    reloadContent(str);
 }
 
 /**
@@ -384,6 +409,16 @@ function showHRValue(serviceId){
  * serviceId サービスID
  * sessionKey セッションKEY
  */
+function doHostSetupBack(serviceId, sessionKey){
+    showHRDeviceSetup(serviceId);
+}
+
+/**
+ * Backボタン
+ *
+ * serviceId サービスID
+ * sessionKey セッションKEY
+ */
 function doM100SetupBack(serviceId, sessionKey){
     showHRDeviceSetup(serviceId);
 }
@@ -471,6 +506,22 @@ function doHeartRateUnregist(serviceId, sessionKey) {
 }
 
 /**
+ * Set Host Parameter
+ */
+function doSetHostParameter() {
+    // add cookie
+    if (DEBUG) console.log(document.HostParamForm.elements[0].value);
+    HostIpAddr = document.HostParamForm.elements[0].value;
+    document.cookie = "HostIpAddr=" + encodeURIComponent(HostIpAddr);
+    if (DEBUG) console.log(document.HostParamForm.elements[1].value);
+    HostPort = document.HostParamForm.elements[1].value;
+    document.cookie = "HostPort=" + encodeURIComponent(HostPort);
+    if (DEBUG) console.log("length:"+document.cookie.length);
+    if (DEBUG) console.log("cookie:"+document.cookie);
+    HostDemoAuthorization(false);
+}
+
+/**
  * Set M100 Parameter
  */
 function doSetM100Parameter() {
@@ -483,7 +534,8 @@ function doSetM100Parameter() {
     document.cookie = "M100Port=" + encodeURIComponent(M100Port);
     if (DEBUG) console.log("length:"+document.cookie.length);
     if (DEBUG) console.log("cookie:"+document.cookie);
-    DemoAuthorization();
+//    DemoAuthorization();
+    M100DemoAuthorization();
 }
 
 /**
@@ -542,7 +594,6 @@ function doSetParameter() {
     M100EiTrainingColor = document.ParamForm.elements[14].value;
     document.cookie = "M100EiTrainingColor=" + encodeURIComponent(M100EiTrainingColor);
 
-/*    confirm("Set Success.");*/
     alert("Set Success.");
 }
 
@@ -632,7 +683,7 @@ function canvasDraw(heartRate) {
     context.font = "36pt Arial";
     context.fillText(orderText, PosX + 225, PosY);
     context.fillStyle = 'rgb(255, 0, 0)'; 
-    context.fillText(heartText, PosX + 320, PosY);
+    context.fillText(heartText, PosX + 310, PosY);
     context.restore();
     context.save();
 
@@ -657,7 +708,7 @@ function canvasDraw(heartRate) {
  */
 function DemoAuthorization(){
 //    M100DemoAuthorization();
-    HostDemoAuthorization();
+    HostDemoAuthorization(true);
 }
 /**
  * Get Local OAuth accesstoken.
@@ -693,7 +744,7 @@ function M100DemoAuthorization(){
 /**
  * Get Local OAuth accesstoken.
  */
-function HostDemoAuthorization(){
+function HostDemoAuthorization(flag){
     if (DEBUG) console.log("ip : " + HostIpAddr);
     $('#host').html("Host connecting:" + HostIpAddr);
     dConnect.setHost(HostIpAddr);
@@ -721,7 +772,9 @@ function HostDemoAuthorization(){
                 }
                 dConnect.connectWebSocket(clientId, function(errorCode, errorMessage) {});
 
-                M100DemoAuthorization();
+                if (flag == true) {
+                    M100DemoAuthorization();
+                }
         },
         function(errorCode, errorMessage) {
               alert("Failed to get accessToken.");
@@ -781,7 +834,7 @@ function searchHealth(flag) {
 
 function debugDrawProcess() {
     canvasDraw(counter)
-    if (counter++ > 160) {
+    if (++counter > 160) {
         counter = 40;
     }
 }
