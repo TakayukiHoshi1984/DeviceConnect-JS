@@ -45,16 +45,17 @@ function init() {
     $('#host').html("connecting:" + ip);
 
     // Tokenをページに表示
-    $('#token').html("accessToken:" + accessToken);
+//    $('#token').html("accessToken:" + accessToken);
 
     // 接続先のBASE_URIを作成
     BASE_URI = "http://" + ip + ":4035/gotapi/";
 
     dConnect.setLaunchListener(function(version) {
         if (DEBUG) console.log("Device Connect Manager has launched: version=" + version);
-        if(accessToken == null){
-            authorization();
-        }
+//        if(accessToken == null){
+//            authorization();
+//        }
+        makeSessionKey();
     });
 //    dConnect.setAntiSpoofing(true);
 //    dConnect.startManager();
@@ -227,9 +228,15 @@ function searchProfile(serviceId, profile) {
     }
 }
 
-/**
- * Execute M100 Demonstration.
- */
-function execM100Demo() {
-        showM100Demo("T.B.D");
+function makeSessionKey() {
+    var datetime = new Date(); 
+    var year = datetime.getFullYear();
+    var month = datetime.getMonth()+1;
+    var day = datetime.getDate();
+    var hour = datetime.getHours();
+    var minute = datetime.getMinutes();
+    var second = datetime.getSeconds();
+
+    currentClientId = "demo" + year + month + day + hour + minute + second;
+    if(DEBUG) console.log("currentClientId: ", currentClientId);
 }
