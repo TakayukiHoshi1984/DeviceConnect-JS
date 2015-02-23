@@ -69,13 +69,13 @@ function demoinit() {
     $('#host').html("Host connecting:" + HostIpAddr);
 
     // Tokenをページに表示
-    $('#hosttoken').html("Host accessToken:" + HostAccessToken);
+/*    $('#hosttoken').html("Host accessToken:" + HostAccessToken);*/
 
     // M100アドレスをページに表示
     $('#m100').html("M100 connecting:" + M100IpAddr);
 
     // Tokenをページに表示
-    $('#m100token').html("M100 accessToken:" + M100DemoAccessToken);
+/*    $('#m100token').html("M100 accessToken:" + M100DemoAccessToken);*/
 
     showM100Demo("");
 }
@@ -89,8 +89,7 @@ function showM100Demo(serviceId) {
     readParam();
 
     var btnStr = "";
-        btnStr += '<center><input data-icon="grid" data-inline="true" data-mini="true" onclick="javascript:DemoAuthorization();" type="button" value="accessToken" /></center>';
-
+/*        btnStr += '<center><input data-icon="grid" data-inline="true" data-mini="true" onclick="javascript:DemoAuthorization();" type="button" value="accessToken" /></center>';*/
     reloadHeader(btnStr);
 
     var str = "";
@@ -304,10 +303,14 @@ function doDeviceMioSetup(serviceId){
     dConnect.get(uri, null, null, function(json) {
         if (DEBUG) console.log("Response: ", json);
         for (var i = 0; i < json.plugins.length; i++) {
-        if (DEBUG) console.log("id : " + json.plugins[i].id + " name : " + json.plugins[i].name);
-        if (json.plugins[i].name == "HeartRate(BLE)デバイスプラグイン") {
+            if (DEBUG) console.log("id : " + json.plugins[i].id + " name : " + json.plugins[i].name);
+            if (json.plugins[i].name == "HeartRate(BLE)デバイスプラグイン") {
                 launchDevicePlugin(json.plugins[i].id);
                 break;
+            }
+            if (i == json.plugins.length) {
+                alert("Health Profile not found.");
+                return;
             }
         }
     });
@@ -472,6 +475,11 @@ function doHeartRateRegist(serviceId, sessionKey) {
     var uri = builder.build();
     if (DEBUG) console.log("Uri: " + uri);
 
+    if (dConnect.isConnectedWebSocket()) {
+        dConnect.disconnectWebSocket();
+    }
+    dConnect.connectWebSocket(sessionKey, function(errorCode, errorMessage) {});
+
     dConnect.addEventListener(uri,function(message) {
         // イベントメッセージが送られてくる
         if(DEBUG) console.log("Event-Message:"+message)
@@ -519,7 +527,8 @@ function doSetHostParameter() {
     document.cookie = "HostPort=" + encodeURIComponent(HostPort);
     if (DEBUG) console.log("length:"+document.cookie.length);
     if (DEBUG) console.log("cookie:"+document.cookie);
-    HostDemoAuthorization(false);
+/*    HostDemoAuthorization(false);*/
+    makeHostSessionKey();
 }
 
 /**
@@ -536,7 +545,8 @@ function doSetM100Parameter() {
     if (DEBUG) console.log("length:"+document.cookie.length);
     if (DEBUG) console.log("cookie:"+document.cookie);
 //    DemoAuthorization();
-    M100DemoAuthorization();
+/*    M100DemoAuthorization();*/
+    $('#m100').html("M100 connecting:" + M100IpAddr);
 }
 
 /**
@@ -771,7 +781,7 @@ function M100DemoAuthorization(){
  */
 function HostDemoAuthorization(flag){
     if (DEBUG) console.log("ip : " + HostIpAddr);
-    $('#host').html("Host connecting:" + HostIpAddr);
+/*    $('#host').html("Host connecting:" + HostIpAddr);*/
     dConnect.setHost(HostIpAddr);
     var scopes = Array("servicediscovery", "battery", "connect", "deviceorientation", "file_descriptor", "file", "media_player",
                     "mediastream_recording", "notification", "phone", "proximity", "settings", "vibration", "light",
@@ -791,18 +801,18 @@ function HostDemoAuthorization(flag){
 
                 // add cookie
                 document.cookie = 'HostAccessToken' + HostIpAddr + '=' + encodeURIComponent(HostAccessToken);
-
+/*
                 if (dConnect.isConnectedWebSocket()) {
                     dConnect.disconnectWebSocket();
                 }
                 dConnect.connectWebSocket(clientId, function(errorCode, errorMessage) {});
-
+*/
                 if (flag == true) {
                     M100DemoAuthorization();
                 }
         },
         function(errorCode, errorMessage) {
-              alert("Failed to get accessToken.");
+            alert("Failed to get accessToken.");
         });
 }
 
@@ -823,6 +833,9 @@ function searchM100(flag) {
 
                 isDrawable = 1;
                 if (flag == 0) {
+                    if (HostCurrentClientId == null) {
+                        makeHostSessionKey();
+                    }
                     doHeartRateRegist(HealthServiceID, HostCurrentClientId);
                     isEvent = 1;
                 } else {
@@ -830,8 +843,13 @@ function searchM100(flag) {
                 }
                 break;
             }
+            if (i == obj.services.length) {
+                alert("Host Profile not found.");
+                return;
+            }
         }
     }, function(readyState, status) {
+        alert("readyState: " + readyState + " status: " + status);
     });
 }
 
@@ -858,6 +876,7 @@ function searchHealth(flag) {
         }
         searchM100(flag);
     }, function(readyState, status) {
+        alert("readyState: " + readyState + " status: " + status);
     });
 }
 
@@ -877,4 +896,17 @@ function stopInterval(flag) {
         timer = null;
     }
     isProcess = 0;
+}
+
+function makeHostSessionKey() {
+    var datetime = new Date(); 
+    var year = datetime.getFullYear();
+    var month = datetime.getMonth()+1;
+    var day = datetime.getDate();
+    var hour = datetime.getHours();
+    var minute = datetime.getMinutes();
+    var second = datetime.getSeconds();
+
+    HostCurrentClientId = "demo" + year + month + day + hour + minute + second;
+    if(DEBUG) console.log("HostCurrentClientId: ", HostCurrentClientId);
 }
