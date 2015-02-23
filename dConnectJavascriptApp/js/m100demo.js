@@ -264,29 +264,6 @@ function showDeviceM100Setup(serviceId){
 }
 
 /**
- * Show Device Mio Alpha Setup
- *
- * @param {String}serviceId サービスID
- */
-function showDeviceMioSetup(serviceId){
-    initAll();
-    setTitle("Mio Alpha Setup");
-
-    var sessionKey = M100DemoCurrentClientId;
-
-    var btnStr = getBackButton('Device Setup Top', 'doM100SetupBack', serviceId, sessionKey);
-    reloadHeader(btnStr);
-    reloadFooter(btnStr);
-    
-    var str = "";
-    str += '<form name="MioParamForm">';
-    str += 'M100 IP Address<br>';
-    str += '<input type="button" name="setButton" id="setButton" value="Set" onclick="doSetMioParameter();"/>';
-    str += '</form>';
-    reloadContent(str);
-}
-
-/**
  * Device Mio Alpha Setup
  *
  * @param {String}serviceId サービスID
@@ -845,11 +822,13 @@ function searchM100(flag) {
             }
             if (i == obj.services.length) {
                 alert("Host Profile not found.");
+                isProcess = 0;
                 return;
             }
         }
     }, function(readyState, status) {
         alert("readyState: " + readyState + " status: " + status);
+        isProcess = 0;
     });
 }
 
@@ -872,11 +851,13 @@ function searchHealth(flag) {
         }
         if (i == obj.services.length) {
             alert("Health Profile not found.");
+            isProcess = 0;
             return;
         }
         searchM100(flag);
     }, function(readyState, status) {
         alert("readyState: " + readyState + " status: " + status);
+        isProcess = 0;
     });
 }
 
