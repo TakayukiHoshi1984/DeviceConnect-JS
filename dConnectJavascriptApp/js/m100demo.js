@@ -28,7 +28,7 @@ var HostIpAddr = "localhost";
 // Host Port.
 var HostPort = "4035";
 /** Local Client ID. */
-var HostCurrentClientId = null;
+var HostCurrentClientId = makeHostSessionKey();
 /** HostAccessTonen. */
 var HostAccessToken = null;
 var M100IpAddr = null;
@@ -65,7 +65,9 @@ var PosY = 150;
  * Demo Page 初期化処理.
  */
 function demoinit() {
-    // 接続先IPアドレスをページに表示
+    readParam();
+
+   // 接続先IPアドレスをページに表示
     $('#host').html("Host connecting:" + HostIpAddr);
 
     // Tokenをページに表示
@@ -86,7 +88,7 @@ function demoinit() {
 function showM100Demo(serviceId) {
     initAll();
     setTitle("Demo Top");
-    readParam();
+/*    readParam();*/
 
     var btnStr = "";
 /*        btnStr += '<center><input data-icon="grid" data-inline="true" data-mini="true" onclick="javascript:DemoAuthorization();" type="button" value="accessToken" /></center>';*/
@@ -374,6 +376,7 @@ function showHRValue(serviceId){
     
     var str = "";
     str += '<form name="upForm">';
+    str += '<input type="button" name="clearButton" id="clearButton" value="Clear Screen" onclick="doClearWindow();"/>';
     str += '<input type="button" name="eventStartButton" id="eventStartButton" value="Start (Event)" onclick="doStartHeartRate(0);"/>';
     str += '<input type="button" name="eventStopButton" id="eventStopButton" value="Stop (Event)" onclick="stopInterval(0);"/>';
     str += '<input type="button" name="incStartButton" id="incStartButton" value="Start (Incremental)" onclick="doStartHeartRate(1);"/>';
@@ -607,6 +610,33 @@ function doSetParameter() {
     document.cookie = "M100EiTrainingColor=" + encodeURIComponent(M100EiTrainingColor);
 
     alert("Set Success.");
+}
+
+/**
+ * Clear Window
+ */
+function doClearWindow() {
+    var canvas =  document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+
+    context.beginPath();
+    context.clearRect(0, 0, width, height);
+
+    var builder = new dConnect.URIBuilder();
+    builder.setProfile("canvas");
+    builder.setAttribute("drawimage");
+    builder.setServiceId(M100ServiceID);
+    builder.setAccessToken(M100DemoAccessToken);
+    var uri = builder.build();
+    
+    if(DEBUG) console.log("Uri:"+uri)
+    
+    dConnect.delete(uri, null, null, function(json) {
+        if (DEBUG) console.log("Response: ", json);
+    }, function(errorCode, errorMessage) {
+        showError("DELETE canvasdrawimage", errorCode, errorMessage);
+    });
+
 }
 
 /**
