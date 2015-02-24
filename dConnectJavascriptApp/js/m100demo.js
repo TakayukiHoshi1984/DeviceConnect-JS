@@ -622,6 +622,7 @@ function doClearWindow() {
     context.beginPath();
     context.clearRect(0, 0, width, height);
 
+    dConnect.setHost(M100IpAddr);
     var builder = new dConnect.URIBuilder();
     builder.setProfile("canvas");
     builder.setAttribute("drawimage");
@@ -634,7 +635,7 @@ function doClearWindow() {
     dConnect.delete(uri, null, null, function(json) {
         if (DEBUG) console.log("Response: ", json);
     }, function(errorCode, errorMessage) {
-        showError("DELETE canvasdrawimage", errorCode, errorMessage);
+        showError("DELETE canvas/drawimage", errorCode, errorMessage);
     });
 
 }
