@@ -56,10 +56,14 @@ var M100EiTrainingColor = null;
 var isCookie = 0;
 var isDrawable = 0;
 
-var width = 430;
-var height = 225;
-var PosX = 45;
-var PosY = 150;
+//var width = 430;
+//var height = 225;
+//var PosX = 45;
+//var PosY = 150;
+var width = 258;
+var height = 135;
+var PosX = 27;
+var PosY = 90;
 
 /**
  * Demo Page 初期化処理.
@@ -664,6 +668,7 @@ function sendImageBinary(blob) {
     
     formData.append('serviceId', M100ServiceID);
     formData.append('accessToken', M100DemoAccessToken);
+    formData.append('mode', 'scales');
     formData.append('filename', 'heartrate.png');
     formData.append('mimeType', 'image/png');
     formData.append('data', blob);
@@ -716,17 +721,21 @@ function canvasDraw(heartRate) {
 
     // Draw heart rate.
     context.beginPath();
-    context.font = "96pt Arial";
+//    context.font = "96pt Arial";
+    context.font = "58pt Arial";
     context.fillStyle = 'rgb(0, 0, 0)'; 
     if (heartRate < 100) {
         context.fillText(" " + heartRate, PosX, PosY);
     } else {
         context.fillText(heartRate, PosX, PosY);
     }
-    context.font = "36pt Arial";
-    context.fillText(orderText, PosX + 225, PosY);
+//    context.font = "36pt Arial";
+    context.font = "21pt Arial";
+//    context.fillText(orderText, PosX + 225, PosY);
+    context.fillText(orderText, PosX + 135, PosY);
     context.fillStyle = 'rgb(255, 0, 0)'; 
-    context.fillText(heartText, PosX + 310, PosY);
+//    context.fillText(heartText, PosX + 310, PosY);
+    context.fillText(heartText, PosX + 186, PosY);
     context.restore();
     context.save();
 
