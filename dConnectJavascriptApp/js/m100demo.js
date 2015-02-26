@@ -5,7 +5,6 @@
  http://opensource.org/licenses/mit-license.php
  */
 
-// For debug.
 // M100 IP Address.
 var devIpAddr = "192.168.1.155";
 // M100 Port.
@@ -28,6 +27,7 @@ var HostIpAddr = "localhost";
 // Host Port.
 var HostPort = "4035";
 /** Local Client ID. */
+/* var HostCurrentClientId = null; */
 var HostCurrentClientId = makeHostSessionKey();
 /** HostAccessTonen. */
 var HostAccessToken = null;
@@ -56,31 +56,27 @@ var M100EiTrainingColor = null;
 var isCookie = 0;
 var isDrawable = 0;
 
-//var width = 430;
-//var height = 225;
-//var PosX = 45;
-//var PosY = 150;
 var width = 258;
 var height = 135;
 var PosX = 27;
 var PosY = 90;
 
 /**
- * Demo Page 初期化処理.
+ * Demo page initialize.
  */
 function demoinit() {
     readParam();
 
-   // 接続先IPアドレスをページに表示
+    // Show Host IP address for page.
     $('#host').html("Host connecting:" + HostIpAddr);
 
-    // Tokenをページに表示
+    // Show Host accessToken for page.
 /*    $('#hosttoken').html("Host accessToken:" + HostAccessToken);*/
 
-    // M100アドレスをページに表示
+    // Show M100 IP address for page.
     $('#m100').html("M100 connecting:" + M100IpAddr);
 
-    // Tokenをページに表示
+    // Show M100 accessToken for page.
 /*    $('#m100token').html("M100 accessToken:" + M100DemoAccessToken);*/
 
     showM100Demo("");
@@ -92,7 +88,6 @@ function demoinit() {
 function showM100Demo(serviceId) {
     initAll();
     setTitle("Demo Top");
-/*    readParam();*/
 
     var btnStr = "";
 /*        btnStr += '<center><input data-icon="grid" data-inline="true" data-mini="true" onclick="javascript:DemoAuthorization();" type="button" value="accessToken" /></center>';*/
@@ -198,7 +193,7 @@ function readParam() {
 /**
  * Show HR Device Setup
  *
- * @param {String}serviceId サービスID
+ * @param {String}serviceId Service ID
  */
 function showHRDeviceSetup(serviceId){
     initAll();
@@ -220,7 +215,7 @@ function showHRDeviceSetup(serviceId){
 /**
  * Show Device Host Setup
  *
- * @param {String}serviceId サービスID
+ * @param {String}serviceId Service ID
  */
 function showDeviceHostSetup(serviceId){
     initAll();
@@ -246,7 +241,7 @@ function showDeviceHostSetup(serviceId){
 /**
  * Show Device M100 Setup
  *
- * @param {String}serviceId サービスID
+ * @param {String}serviceId Service ID
  */
 function showDeviceM100Setup(serviceId){
     initAll();
@@ -272,7 +267,7 @@ function showDeviceM100Setup(serviceId){
 /**
  * Device Mio Alpha Setup
  *
- * @param {String}serviceId サービスID
+ * @param {String}serviceId Service ID
  */
 function doDeviceMioSetup(serviceId){
     if (DEBUG) console.log("ip : " + HostIpAddr);
@@ -302,7 +297,7 @@ function doDeviceMioSetup(serviceId){
 /**
  * Show HR Parameter Setup
  *
- * @param {String}serviceId サービスID
+ * @param {String}serviceId Service ID
  */
 function showHRParamSetup(serviceId){
     initAll();
@@ -366,7 +361,7 @@ function showHRParamSetup(serviceId){
 /**
  * Show HR Value
  *
- * @param {String}serviceId サービスID
+ * @param {String}serviceId Service ID
  */
 function showHRValue(serviceId){
     initAll();
@@ -392,54 +387,52 @@ function showHRValue(serviceId){
 }
 
 /**
- * Backボタン
+ * Back button
  *
- * serviceId サービスID
- * sessionKey セッションKEY
+ * serviceId Service ID
+ * sessionKey Session Key
  */
 function doHostSetupBack(serviceId, sessionKey){
     showHRDeviceSetup(serviceId);
 }
 
 /**
- * Backボタン
+ * Back button
  *
- * serviceId サービスID
- * sessionKey セッションKEY
+ * serviceId Service ID
+ * sessionKey Session Key
  */
 function doM100SetupBack(serviceId, sessionKey){
     showHRDeviceSetup(serviceId);
 }
 
 /**
- * Backボタン
+ * Back button
  *
- * serviceId サービスID
- * sessionKey セッションKEY
+ * serviceId Service ID
+ * sessionKey Session Key
  */
 function doHRDeviceBack(serviceId, sessionKey){
     showM100Demo(serviceId);
 }
 
 /**
- * Backボタン
+ * Back button
  *
- * serviceId サービスID
- * sessionKey セッションKEY
+ * serviceId Service ID
+ * sessionKey Session Key
  */
 function doHRParamBack(serviceId, sessionKey){
     showM100Demo(serviceId);
 }
 
 /**
- * Backボタン
+ * Back button
  *
- * serviceId サービスID
- * sessionKey セッションKEY
+ * serviceId Service ID
+ * sessionKey Session Key
  */
 function doHRValueBack(serviceId, sessionKey){
-
-/*    doHeartRateUnregist(serviceId, sessionKey);*/
     stopInterval();
     showM100Demo(serviceId);
 }
@@ -465,7 +458,7 @@ function doHeartRateRegist(serviceId, sessionKey) {
     dConnect.connectWebSocket(sessionKey, function(errorCode, errorMessage) {});
 
     dConnect.addEventListener(uri,function(message) {
-        // イベントメッセージが送られてくる
+        // Parse event message.
         if(DEBUG) console.log("Event-Message:"+message)
         var json = JSON.parse(message);
         if (json.heartRate && isDrawable == 1) {
@@ -528,7 +521,6 @@ function doSetM100Parameter() {
     document.cookie = "M100Port=" + encodeURIComponent(M100Port);
     if (DEBUG) console.log("length:"+document.cookie.length);
     if (DEBUG) console.log("cookie:"+document.cookie);
-//    DemoAuthorization();
 /*    M100DemoAuthorization();*/
     $('#m100').html("M100 connecting:" + M100IpAddr);
 }
@@ -662,8 +654,10 @@ function doStartHeartRate(flag) {
     }
 }
 
+/**
+ * Send image data
+ */
 function sendImageBinary(blob) {
-    //バイナリ化した画像をPOSTで送る関数
     var formData = new FormData();
     
     formData.append('serviceId', M100ServiceID);
@@ -688,6 +682,9 @@ function sendImageBinary(blob) {
     });
 }
 
+/**
+ * Canvas draw
+ */
 function canvasDraw(heartRate) {
     var canvas =  document.getElementById('canvas');
     var context = canvas.getContext('2d');
@@ -721,7 +718,6 @@ function canvasDraw(heartRate) {
 
     // Draw heart rate.
     context.beginPath();
-//    context.font = "96pt Arial";
     context.font = "58pt Arial";
     context.fillStyle = 'rgb(0, 0, 0)'; 
     if (heartRate < 100) {
@@ -729,12 +725,9 @@ function canvasDraw(heartRate) {
     } else {
         context.fillText(heartRate, PosX, PosY);
     }
-//    context.font = "36pt Arial";
     context.font = "21pt Arial";
-//    context.fillText(orderText, PosX + 225, PosY);
     context.fillText(orderText, PosX + 135, PosY);
     context.fillStyle = 'rgb(255, 0, 0)'; 
-//    context.fillText(heartText, PosX + 310, PosY);
     context.fillText(heartText, PosX + 186, PosY);
     context.restore();
     context.save();
@@ -747,7 +740,7 @@ function canvasDraw(heartRate) {
     arr = new Uint8Array(buff),
     blob, i, dataLen;
     
-    //Create blob.
+    // Create blob.
     for (i = 0, dataLen = data.length; i < dataLen; i++) {
         arr[i] = data.charCodeAt(i);
     }
@@ -759,7 +752,6 @@ function canvasDraw(heartRate) {
  * Get Local OAuth accesstoken.
  */
 function DemoAuthorization(){
-//    M100DemoAuthorization();
     HostDemoAuthorization(true);
 }
 /**
@@ -818,12 +810,7 @@ function HostDemoAuthorization(flag){
 
                 // add cookie
                 document.cookie = 'HostAccessToken' + HostIpAddr + '=' + encodeURIComponent(HostAccessToken);
-/*
-                if (dConnect.isConnectedWebSocket()) {
-                    dConnect.disconnectWebSocket();
-                }
-                dConnect.connectWebSocket(clientId, function(errorCode, errorMessage) {});
-*/
+
                 if (flag == true) {
                     M100DemoAuthorization();
                 }
@@ -901,6 +888,9 @@ function searchHealth(flag) {
     });
 }
 
+/**
+ * Debug draw process
+ */
 function debugDrawProcess() {
     canvasDraw(counter)
     if (++counter > 160) {
@@ -908,6 +898,9 @@ function debugDrawProcess() {
     }
 }
 
+/**
+ * Stop interval
+ */
 function stopInterval(flag) {
     if (flag == 0) {
         doHeartRateUnregist(HealthServiceID, HostCurrentClientId);
@@ -919,6 +912,9 @@ function stopInterval(flag) {
     isProcess = 0;
 }
 
+/**
+ * Make Host sessionKey
+ */
 function makeHostSessionKey() {
     var datetime = new Date(); 
     var year = datetime.getFullYear();
