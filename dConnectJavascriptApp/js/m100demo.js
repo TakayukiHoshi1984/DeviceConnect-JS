@@ -208,7 +208,7 @@ function showHRDeviceSetup(serviceId){
     var str = "";
     str += '<li><a href="javascript:showDeviceHostSetup(\'' + serviceId + '\');" >Host Setup</a></li>';
     str += '<li><a href="javascript:showDeviceM100Setup(\'' + serviceId + '\');" >M100 Setup</a></li>';
-    str += '<li><a href="javascript:doDeviceMioSetup(\'' + serviceId + '\');" >Mio Alpha Setup</a></li>';
+    str += '<li><a href="javascript:doDeviceHRSetup(\'' + serviceId + '\');" >Heart Rate Device Setup</a></li>';
     reloadList(str);
 }
 
@@ -265,11 +265,11 @@ function showDeviceM100Setup(serviceId){
 }
 
 /**
- * Device Mio Alpha Setup
+ * Device HR Setup
  *
  * @param {String}serviceId Service ID
  */
-function doDeviceMioSetup(serviceId){
+function doDeviceHRSetup(serviceId){
     if (DEBUG) console.log("ip : " + HostIpAddr);
     dConnect.setHost(HostIpAddr);
     var builder = new dConnect.URIBuilder();
@@ -869,8 +869,11 @@ function searchHealth(flag) {
         if(DEBUG) console.log("response: ", obj);
 
         for (var i = 0; i < obj.services.length; i++) {
-            if(DEBUG) console.log("services: ", obj.services[i].name);
-            if(obj.services[i].name == "MIO GLOBAL") {
+            if (DEBUG) console.log("services: ", obj.services[i].name);
+            if ( (obj.services[i].name == "MIO GLOBAL")
+              || (obj.services[i].name.indexOf('PS-100') === 0)
+              || (obj.services[i].name.indexOf('Polar H7') === 0)
+              || (obj.services[i].name.indexOf('Wahoo HRM') === 0) ) {
                 HealthServiceID = obj.services[i].id;
                 if(DEBUG) console.log('HealthServiceID:' + HealthServiceID);
                 break;
