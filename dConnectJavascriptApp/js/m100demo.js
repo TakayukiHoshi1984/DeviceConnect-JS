@@ -854,7 +854,7 @@ function searchM100(flag) {
             }
         }
     }, function(readyState, status) {
-        alert("readyState: " + readyState + " status: " + status);
+        alert("[SeharchM100] readyState: " + readyState + " status: " + status);
         isProcess = 0;
     });
 }
@@ -886,7 +886,7 @@ function searchHealth(flag) {
         }
         searchM100(flag);
     }, function(readyState, status) {
-        alert("readyState: " + readyState + " status: " + status);
+        alert("[SeharchHealth] readyState: " + readyState + " status: " + status);
         isProcess = 0;
     });
 }
