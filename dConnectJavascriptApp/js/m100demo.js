@@ -27,8 +27,8 @@ var HostIpAddr = "localhost";
 // Host Port.
 var HostPort = "4035";
 /** Local Client ID. */
-/* var HostCurrentClientId = null; */
-var HostCurrentClientId = makeHostSessionKey();
+var HostCurrentClientId = null;
+/* var HostCurrentClientId = makeHostSessionKey(); */
 /** HostAccessTonen. */
 var HostAccessToken = null;
 var M100IpAddr = null;
@@ -71,13 +71,13 @@ function demoinit() {
     $('#host').html("Host connecting:" + HostIpAddr);
 
     // Show Host accessToken for page.
-/*    $('#hosttoken').html("Host accessToken:" + HostAccessToken);*/
+    $('#hosttoken').html("Host accessToken:" + HostAccessToken);
 
     // Show M100 IP address for page.
     $('#m100').html("M100 connecting:" + M100IpAddr);
 
     // Show M100 accessToken for page.
-/*    $('#m100token').html("M100 accessToken:" + M100DemoAccessToken);*/
+    $('#m100token').html("M100 accessToken:" + M100DemoAccessToken);
 
     showM100Demo("");
 }
@@ -90,7 +90,7 @@ function showM100Demo(serviceId) {
     setTitle("Demo Top");
 
     var btnStr = "";
-/*        btnStr += '<center><input data-icon="grid" data-inline="true" data-mini="true" onclick="javascript:DemoAuthorization();" type="button" value="accessToken" /></center>';*/
+        btnStr += '<center><input data-icon="grid" data-inline="true" data-mini="true" onclick="javascript:DemoAuthorization();" type="button" value="accessToken" /></center>';
     reloadHeader(btnStr);
 
     var str = "";
@@ -504,8 +504,8 @@ function doSetHostParameter() {
     document.cookie = "HostPort=" + encodeURIComponent(HostPort);
     if (DEBUG) console.log("length:"+document.cookie.length);
     if (DEBUG) console.log("cookie:"+document.cookie);
-/*    HostDemoAuthorization(false);*/
-    makeHostSessionKey();
+    HostDemoAuthorization(false);
+/*    makeHostSessionKey();*/
 }
 
 /**
@@ -521,7 +521,7 @@ function doSetM100Parameter() {
     document.cookie = "M100Port=" + encodeURIComponent(M100Port);
     if (DEBUG) console.log("length:"+document.cookie.length);
     if (DEBUG) console.log("cookie:"+document.cookie);
-/*    M100DemoAuthorization();*/
+    M100DemoAuthorization();
     $('#m100').html("M100 connecting:" + M100IpAddr);
 }
 
@@ -790,7 +790,7 @@ function M100DemoAuthorization(){
  */
 function HostDemoAuthorization(flag){
     if (DEBUG) console.log("ip : " + HostIpAddr);
-/*    $('#host').html("Host connecting:" + HostIpAddr);*/
+    $('#host').html("Host connecting:" + HostIpAddr);
     dConnect.setHost(HostIpAddr);
     var scopes = Array("servicediscovery", "battery", "connect", "deviceorientation", "file_descriptor", "file", "media_player",
                     "mediastream_recording", "notification", "phone", "proximity", "settings", "vibration", "light",
@@ -837,9 +837,11 @@ function searchM100(flag) {
 
                 isDrawable = 1;
                 if (flag == 0) {
+/*
                     if (HostCurrentClientId == null) {
                         makeHostSessionKey();
                     }
+*/
                     doHeartRateRegist(HealthServiceID, HostCurrentClientId);
                     isEvent = 1;
                 } else {

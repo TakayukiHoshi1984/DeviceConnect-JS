@@ -45,17 +45,17 @@ function init() {
     $('#host').html("connecting:" + ip);
 
     // Tokenをページに表示
-//    $('#token').html("accessToken:" + accessToken);
+    $('#token').html("accessToken:" + accessToken);
 
     // 接続先のBASE_URIを作成
     BASE_URI = "http://" + ip + ":4035/gotapi/";
 
     dConnect.setLaunchListener(function(version) {
         if (DEBUG) console.log("Device Connect Manager has launched: version=" + version);
-//        if(accessToken == null){
-//            authorization();
-//        }
-        makeSessionKey();
+        if(accessToken == null){
+            authorization();
+        }
+/*        makeSessionKey();*/
     });
 //    dConnect.setAntiSpoofing(true);
 //    dConnect.startManager();
