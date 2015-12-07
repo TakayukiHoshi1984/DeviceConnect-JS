@@ -155,7 +155,7 @@ function authorization(callback) {
               'dice', 'temperature', 'camera', 'canvas', 'health',
               'touch', 'humandetect', 'keyevent', 'omnidirectional_image',
                'tv', 'powermeter','humidity','illuminance', 'videochat',
-               'airconditioner');
+               'airconditioner', 'measurement');
   dConnect.authorization(scopes, 'Demo Web Site',
       function(clientId, newAccessToken) {
         // Client ID
@@ -304,5 +304,7 @@ function searchProfile(serviceId, profile) {
     showTV(serviceId);
   } else if (profile === 'airconditioner') {
     showAirConditioner(serviceId);
+  } else if (profile === 'measurement') {
+    showMeasurement(serviceId);
   }
 }
