@@ -59,15 +59,16 @@ function showGetTest(serviceId) {
   str += '<input type="text" id="countG" width="100%">';
   str += '<input type="text" id="measureG1" width="100%">';
   str += '<input type="text" id="measureG2" width="100%">';
+  str += '<input type="text" id="measureG21" width="100%">';
   str += '<input type="text" id="measureG3" width="100%">';
   str += '<input type="text" id="measureG4" width="100%">';
   str += '</form>';
   reloadContent(str);
 }
 
-var sum_point_gA, sum_point_gB, sum_point_gC, sum_point_gD;
-var min_point_gA, min_point_gB, min_point_gC, min_point_gD;
-var max_point_gA, max_point_gB, max_point_gC, max_point_gD;
+var sum_point_gA, sum_point_gB, sum_point_gC, sum_point_gD, sum_point_gE;
+var min_point_gA, min_point_gB, min_point_gC, min_point_gD, min_point_gE;
+var max_point_gA, max_point_gB, max_point_gC, max_point_gD, max_point_gE;
 /**
  * Get Test Caller
  *
@@ -78,20 +79,24 @@ function doGetTest(serviceId) {
   sum_point_gB = 0;
   sum_point_gC = 0;
   sum_point_gD = 0;
+  sum_point_gE = 0;
   min_point_gA = 0;
   min_point_gB = 0;
   min_point_gC = 0;
   min_point_gD = 0;
+  min_point_gE = 0;
   max_point_gA = 0;
   max_point_gB = 0;
   max_point_gC = 0;
   max_point_gD = 0;
+  max_point_gE = 0;
   time = 0;
   timerID = 0;
 
   $('#countG').val('');
   $('#measureG1').val('');
   $('#measureG2').val('');
+  $('#measureG21').val('');
   $('#measureG3').val('');
   $('#measureG4').val('');
 
@@ -148,22 +153,28 @@ function doGetTestMain(serviceId) {
     if (json) {
       var request_time = Number(json.request_time);
       var mgr_request_time = Number(json.mgr_request_time);
+      var mgr_request_nanotime = Number(json.mgr_request_nanotime);
+      var mgr_req_process_time = Number(json.mgr_req_process_time);
+      var mgr_req_process_nanotime = Number(json.mgr_req_process_nanotime);
       var plugin_response_time = Number(json.plugin_response_time);
       var mgr_response_time = Number(json.mgr_response_time);
       var point_gA = mgr_request_time - request_time;
       var point_gB = plugin_response_time - mgr_request_time;
       var point_gC = mgr_response_time - plugin_response_time;
       var point_gD = now_time - mgr_response_time;
+      var point_gE = mgr_req_process_nanotime - mgr_request_nanotime;
 
       if (time == 1) {
         min_point_gA = point_gA;
         min_point_gB = point_gB;
         min_point_gC = point_gC;
         min_point_gD = point_gD;
+        min_point_gE = point_gE;
         max_point_gA = point_gA;
         max_point_gB = point_gB;
         max_point_gC = point_gC;
         max_point_gD = point_gD;
+        max_point_gE = point_gE;
       } else {
         if (point_gA > max_point_gA ) {
           max_point_gA = point_gA;
@@ -176,6 +187,9 @@ function doGetTestMain(serviceId) {
         }
         if (point_gD > max_point_gD ) {
           max_point_gD = point_gD;
+        }
+        if (point_gE > max_point_gE ) {
+          max_point_gE = point_gE;
         }
 
         if (point_gA < min_point_gA) {
@@ -190,15 +204,20 @@ function doGetTestMain(serviceId) {
         if (point_gD < min_point_gD) {
           min_point_gD = point_gD;
         }
+        if (point_gE < min_point_gE) {
+          min_point_gE = point_gE;
+        }
       }
       
       sum_point_gA = sum_point_gA + point_gA;
       sum_point_gB = sum_point_gB + point_gB;
       sum_point_gC = sum_point_gC + point_gC;
       sum_point_gD = sum_point_gD + point_gD;
+      sum_point_gE = sum_point_gE + point_gE;
       $('#countG').val('count: ' + time);
       $('#measureG1').val('measure1: ' + (sum_point_gA / time) + ', min: ' + min_point_gA + ', max: ' + max_point_gA);
       $('#measureG2').val('measure2: ' + (sum_point_gB / time) + ', min: ' + min_point_gB + ', max: ' + max_point_gB);
+      $('#measureG21').val('measure21(nanoSec): ' + (sum_point_gE / time) + ', min: ' + min_point_gE + ', max: ' + max_point_gE);
       $('#measureG3').val('measure3: ' + (sum_point_gC / time) + ', min: ' + min_point_gC + ', max: ' + max_point_gC);
       $('#measureG4').val('measure4: ' + (sum_point_gD / time) + ', min: ' + min_point_gD + ', max: ' + max_point_gD);
       if (DEBUG) {
@@ -206,6 +225,7 @@ function doGetTestMain(serviceId) {
         console.log('sum_point_gB: ', sum_point_gB);
         console.log('sum_point_gC: ', sum_point_gC);
         console.log('sum_point_gD: ', sum_point_gD);
+        console.log('sum_point_gE: ', sum_point_gE);
       }
     }
   }, function(errorCode, errorMessage) {
