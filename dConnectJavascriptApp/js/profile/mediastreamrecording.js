@@ -5,6 +5,11 @@
  http://opensource.org/licenses/mit-license.php
  */
 
+var RECORDING_STATE_STOPPED = 'Stopped';
+var RECORDING_STATE_RECORDING = 'Recording';
+var RECORDING_STATE_PAUSED = 'Paused';
+var _recordingState = RECORDING_STATE_STOPPED;
+
 /**
  * MediastreamRecording Menu
  *
@@ -282,6 +287,8 @@ function doMediaRecord(serviceId, target) {
   var btnStr = getBackButton('MediaStreamRecording Top', 'doRecordMediaBack', serviceId, '');
   reloadHeader(btnStr);
   reloadFooter(btnStr);
+  reloadContent(mediaButtons(serviceId));
+  setRecordingState(RECORDING_STATE_STOPPED);
 
   setTitle('Recording, now');
 
@@ -305,8 +312,7 @@ function doMediaRecord(serviceId, target) {
         if (DEBUG) {
           console.log('Response: ', json);
         }
-
-        reloadContent(mediaStopButton(serviceId));
+        setRecordingState(RECORDING_STATE_RECORDING);
       }, function(errorCode, errorMessage) {
         showError('POST mediastream_recording/record', errorCode, errorMessage);
       });
@@ -319,7 +325,59 @@ function doMediaRecord(serviceId, target) {
 }
 
 /**
- * Media停止
+ * レコーディングを一時停止させる.
+ * 
+ * @param {String} serviceId サービスID
+ */
+function doMediaPause(serviceId) {
+  var builder = new dConnect.URIBuilder();
+  builder.setProfile('mediastream_recording');
+  builder.setAttribute('pause');
+  builder.setServiceId(serviceId);
+  builder.setAccessToken(accessToken);
+  var uri = builder.build();
+  if (DEBUG) {
+    console.log('Uri:' + uri)
+  }
+
+  dConnect.put(uri, null, null, function(json) {
+    if (DEBUG) {
+      console.log('Response: ', json);
+    }
+    setRecordingState(RECORDING_STATE_PAUSED);
+  }, function(errorCode, errorMessage) {
+    showError('PUT mediastream_recording/pause', errorCode, errorMessage);
+  });
+}
+
+/**
+ * レコーディングの一時停止を解除する.
+ * 
+ * @param {String} serviceId サービスID
+ */
+function doMediaResume(serviceId) {
+  var builder = new dConnect.URIBuilder();
+  builder.setProfile('mediastream_recording');
+  builder.setAttribute('resume');
+  builder.setServiceId(serviceId);
+  builder.setAccessToken(accessToken);
+  var uri = builder.build();
+  if (DEBUG) {
+    console.log('Uri:' + uri)
+  }
+
+  dConnect.put(uri, null, null, function(json) {
+    if (DEBUG) {
+      console.log('Response: ', json);
+    }
+    setRecordingState(RECORDING_STATE_RECORDING);
+  }, function(errorCode, errorMessage) {
+    showError('PUT mediastream_recording/resume', errorCode, errorMessage);
+  });
+}
+
+/**
+ * レコーディングを停止させる.
  *
  * @param {String} serviceId サービスID
  */
@@ -339,9 +397,31 @@ function doMediaStop(serviceId) {
       console.log('Response: ', json);
     }
     showMediastreamRecording(serviceId);
+
+    setRecordingState(RECORDING_STATE_STOPPED);
   }, function(errorCode, errorMessage) {
     showError('PUT mediastream_recording/stop', errorCode, errorMessage);
   });
+}
+
+/**
+ * アプリ側のレコーディング状態を遷移させる.
+ * 
+ * @param {String} state レコーディング状態
+ */
+function setRecordingState(state) {
+  _recordingState = state;
+  onRecordingStateChanged(state);
+}
+
+/**
+ * アプリ側のレコーディング状態遷移を通知する.
+ * 
+ * @param {String} state レコーディング状態
+ */
+function onRecordingStateChanged(state) {
+  console.log('Changed Recording State: ' + state);
+  $('#recordingState').text(state);
 }
 
 /**
@@ -395,11 +475,21 @@ function doGetMediaRecorder(serviceId, target, callback) {
  *
  * @param {String} serviceId サービスID
  */
-function mediaStopButton(serviceId) {
+function mediaButtons(serviceId) {
   var str = '';
   str += '<center>';
-  str += '<input data-icon="stop"  ';
-  str += 'onclick="javascript:doMediaStop(\'' +
+  str += 'Recording State: <span id="recordingState"></span>';
+  str += '<input data-icon="pause"';
+  str += ' id="mediaPauseBtn"';
+  str += ' onclick="javascript:doMediaPause(\'' +
+          serviceId + '\');" type="button" value="Pause"/>';
+  str += '<input data-icon="play"';
+  str += ' id="mediaResumeBtn"';
+  str += ' onclick="javascript:doMediaResume(\'' +
+          serviceId + '\');" type="button" value="Resume"/>';
+  str += '<input data-icon="stop"';
+  str += ' id="mediaStopBtn"';
+  str += ' onclick="javascript:doMediaStop(\'' +
           serviceId + '\');" type="button" value="Stop"/>';
   str += '</center>';
   return str;
