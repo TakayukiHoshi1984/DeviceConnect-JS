@@ -22,6 +22,107 @@
    * </p>
    */
   var DEVICE_NAME = "Host";
+
+  var EXPECTED_APIS = {
+    "battery": {
+      "/": ["get"],
+      "/level": ["get"],
+      "/charging": ["get"],
+      "/onBatteryChange": ["get", "put", "delete"],
+      "/onChargingChange": ["get", "put", "delete"]
+    },
+    "canvas": {
+      "/drawImage": ["post", "delete"]
+    },
+    "connect": {
+      "/wifi": ["get", "put", "delete"],
+      "/bluetooth": ["get", "put", "delete"],
+      "/ble": ["get", "put", "delete"],
+      "/nfc": ["get"],
+      "/onWifiChange": ["put", "delete"],
+      "/onBluetoothChange": ["put", "delete"]
+    },
+    "deviceOrientation": {
+      "/onDeviceOrientation": ["get", "put", "delete"]
+    },
+    "file": {
+      "/receive": ["get"],
+      "/list": ["get"],
+      "/send": ["post"],
+      "/remove": ["delete"],
+      "/mkdir": ["post"],
+      "/rmdir": ["delete"]
+    },
+    "fileDescriptor": {
+      "/open": ["get"],
+      "/read": ["get"],
+      "/close": ["put"],
+      "/write": ["put"],
+      "/onWatchFile": ["get", "put", "delete"]
+    },
+    "keyEvent": {
+      "/onDown": ["get", "put", "delete"],
+      "/onUp": ["get", "put", "delete"]
+    },
+    "mediaPlayer": {
+      "/play": ["put"],
+      "/stop": ["put"],
+      "/pause": ["put"],
+      "/resume": ["put"],
+      "/playStatus": ["get"],
+      "/media": ["put", "get"],
+      "/mediaList": ["get"],
+      "/volume": ["put", "get"],
+      "/seek": ["put", "get"],
+      "/mute": ["put", "delete", "get"],
+      "/onStatusChange": ["put", "delete"]
+    },
+    "mediaStreamRecording": {
+      "/mediaRecorder": ["get"],
+      "/options": ["get", "put"],
+      "/onPhoto": ["put", "delete"],
+      "/takePhoto": ["post"],
+      "/preview": ["put", "delete"],
+      "/record": ["post"],
+      "/stop": ["put"],
+      "/pause": ["put"],
+      "/resume": ["put"]
+    },
+    "notification": {
+      "/notify": ["post", "delete"],
+      "/onClick": ["put", "delete"],
+      "/onClose": ["put", "delete"],
+      "/onShow": ["put", "delete"]
+    },
+    "phone": {
+      "/call": ["post"],
+      "/set": ["put"],
+      "/onConnect": ["put", "delete"]
+    },
+    "proximity": {
+      "/onUserProximity": ["get", "put", "delete"]
+    },
+    "settings": {
+      "/sound/volume": ["get", "put"],
+      "/date": ["get"],
+      "/display/light": ["get", "put"],
+      "/display/sleep": ["get", "put"]
+    },
+    "touch": {
+      "/onTouch": ["get", "put", "delete"],
+      "/onTouchStart": ["get", "put", "delete"],
+      "/onTouchEnd": ["get", "put", "delete"],
+      "/onDoubleTap": ["get", "put", "delete"],
+      "/onTouchMove": ["get", "put", "delete"],
+      "/onTouchCancel": ["get", "put", "delete"]
+    },
+    "vibration": {
+      "/vibrate": ["put", "delete"]
+    },
+    "serviceInformation": {
+      "/": ["get"]
+    }
+  };
   </script>
   
   <script src="../qunit/qunit-1.15.0.js"></script>
@@ -30,6 +131,10 @@
   <script src="../dconnect-test-config.js"></script>
   <script src="../dconnect-test-util.js"></script>
 
+  <script src="profiles/service_discovery_normal.js"></script>
+  <script src="profiles/service_discovery_abnormal.js"></script>
+  <script src="profiles/serviceinformation_normal.js"></script>
+  <script src="profiles/serviceinformation_abnormal.js"></script>
   <script src="profiles/battery_normal.js"></script>
   <script src="profiles/battery_abnormal.js"></script>
   <script src="profiles/canvas_normal.js"></script>
@@ -48,8 +153,6 @@
   <script src="profiles/media_player_abnormal.js"></script>
   <script src="profiles/mediastream_recording_normal.js"></script>
   <script src="profiles/mediastream_recording_abnormal.js"></script>
-  <script src="profiles/service_discovery_normal.js"></script>
-  <script src="profiles/service_discovery_abnormal.js"></script>
   <script src="profiles/notification_normal.js"></script>
   <script src="profiles/notification_abnormal.js"></script>
   <script src="profiles/phone_normal.js"></script>
