@@ -1219,6 +1219,9 @@ var dConnect = (function(parent, global) {
    * @return 指定されたHMACが正常であればtrue、そうでない場合はfalse
    */
   var checkHmac = function(nonce, hmac) {
+    if (!isEnabledAntiSpoofing()) {
+      return true;
+    }
     var hmacKey = _currentHmacKey;
     if (hmacKey === '') {
       return true;
@@ -1730,6 +1733,10 @@ var dConnect = (function(parent, global) {
     var checkDeviceConnect = function(success_cb, error_cb) {
         var builder = new parent.URIBuilder();
         builder.setProfile(parent.constants.availability.PROFILE_NAME);
+        if (_currentHmacKey === '') {
+          _currentHmacKey = generateRandom(HMAC_KEY_BYTES);
+        }
+        builder.addParameter('key', _currentHmacKey);
         parent.sendRequest('GET', builder.build(), null, null, function(json) {
             // localhost:4035でGotAPIが利用可能
             success_cb(json.version);

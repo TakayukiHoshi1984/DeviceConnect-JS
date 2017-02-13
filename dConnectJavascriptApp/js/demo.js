@@ -52,7 +52,7 @@ function init() {
 
   if (isAndroid() &&
     location.href.indexOf('file:///') == -1) {
-      dConnect.setAntiSpoofing(true);
+      dConnect.setAntiSpoofing(false);
   }
   dConnect.setHost(ip);
   dConnect.setSSLEnabled(location.protocol === 'https:');
