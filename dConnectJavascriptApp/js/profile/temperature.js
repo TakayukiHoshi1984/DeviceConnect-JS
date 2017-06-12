@@ -5,39 +5,21 @@
  http://opensource.org/licenses/mit-license.php
  */
 
-
-/**
- * Show Health Menu
- *
- * @param {String} serviceId サービスID
- */
-function showTemperatureProfile(serviceId) {
-  initAll();
-  setTitle('Temperature Profile');
-
-  var btnStr = getBackButton('Device Top', 'doTemperatureBack', serviceId, '');
-  reloadHeader(btnStr);
-  reloadFooter(btnStr);
-
-  var str = '';
-  str += '<li><a href="javascript:showGetTemperature(\'' +
-          serviceId + '\',\'\');">Get Temperature</a></li>';
-  str += '<li><a href="javascript:showSetTemperature(\'' +
-          serviceId + '\');">Set Temperature</a></li>';
-  reloadList(str);
-}
 /**
  * Show Get Temperature.
  *
  * @param {String} serviceId サービスID
  */
-function showGetTemperature(serviceId, html) {
+function showTemperatureProfile(serviceId, html) {
 
   initAll();
 
   setTitle('Temperature Profile');
 
   var btnStr = '';
+  if (html === undefined) {
+    html = '';
+  }
   btnStr = getBackButton('Temperature Top', 'doTemperatureMenuBack', serviceId, '');
   reloadHeader(btnStr);
   reloadFooter(btnStr);
@@ -91,7 +73,7 @@ function getTemperature(serviceId) {
 
     var str = '';
     str += '<center><h1>' + temp + '<h1></center>';
-    showGetTemperature(serviceId, str);
+    showTemperatureProfile(serviceId, str);
   }, function(errorCode, errorMessage) {
     closeLoading();
     showError('GET temperature', errorCode, errorMessage);
