@@ -445,7 +445,7 @@ function doPreviewStart(serviceId, target) {
   var str = '';
   str += '<center>';
   str += '<div id="preview-uri"></div>';
-  str += '<img src="./css/images/cameraWait.png" width="100%" id="preview">';
+  str += '<img src="./css/images/cameraWait.png" width="100%" id="preview" >';
   str += '</center><br>';
   reloadContent(str);
 
@@ -507,10 +507,19 @@ function doTakePhoto(serviceId, target) {
 
     var myUri = json.uri;
     myUri = myUri.replace('localhost', ip);
-    refreshImg(myUri, 'photo');
-    closeLoading();
-
-    $('#onPhoto').val(json.uri);
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", myUri, true);
+    xhr.responseType = "blob";
+    xhr.onload = function() {
+         loadImage(xhr.response, function(img) {
+            var aNode = document.getElementById("photo");
+            aNode.src = img.toDataURL();
+            closeLoading();
+         },
+         { orientation: true });
+     };
+     xhr.send();
+     $('#onPhoto').val(json.uri);
   }, function(errorCode, errorMessage) {
     showError('POST mediastreamrecording/takephoto', errorCode, errorMessage);
     closeLoading();
