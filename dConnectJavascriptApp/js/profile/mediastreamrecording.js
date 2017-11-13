@@ -472,7 +472,14 @@ function doTakePhoto(serviceId, target) {
   reloadFooter(str);
 
   var str = '';
-  str += makeInputText('onPhoto', 'onPhoto', 'onPhoto')
+  str += '  <label for="TakePhoto">TakePhoto:</label>';
+  str += makeInputText('URI', 'takePhotoUri', 'takePhotoUri');
+  str += makeInputText('Path', 'takePhotoPath', 'takePhotoPath');
+  str += '<br><br>';
+  str += '  <label for="OnPhoto">OnPhoto:</label>';
+  str += makeInputText('URI', 'onPhotoUri', 'onPhotoUri');
+  str += makeInputText('Path', 'onPhotoPath', 'onPhotoPath');
+  str += makeInputText('MimeType', 'onPhotoMimeType', 'onMimeType');
   str += '<center>';
   str += '<img src="./css/images/cameraWait.png" width="100%" id="photo">';
   str += '</center><br>';
@@ -509,8 +516,8 @@ function doTakePhoto(serviceId, target) {
 		refreshImg(myUri, 'photo');
 		closeLoading();
 
-		$('#onPhoto').val(json.uri);
-	
+		$('#takePhotoUri').val(json.uri);
+		$('#takePhotoPath').val(json.path);	
 	  }, function(errorCode, errorMessage) {
 		showError('POST mediastreamrecording/takephoto', errorCode, errorMessage);
 		closeLoading();
@@ -833,8 +840,9 @@ function doRegisterOnPhoto(serviceId, cb) {
     }
 
     var json = JSON.parse(message);
-    $('#onPhoto').val(json.photo.path + ':' + json.photo.mimeType);
-
+    $('#onPhotoUri').val(json.photo.uri);    
+    $('#onPhotoPath').val(json.photo.path);
+    $('#onPhotoMimeType').val(json.photo.mimeType);
   }, function() {
     if (cb) {
     	cb();
