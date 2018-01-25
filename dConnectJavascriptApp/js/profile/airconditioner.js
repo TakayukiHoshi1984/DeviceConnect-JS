@@ -35,17 +35,17 @@ function showAirConditioner(serviceId) {
                  sessionKey);
   reloadHeader(btnStr);
   reloadFooter(btnStr);
-  
+
   getAirConditionerTemperatureStatus(serviceId);
   getAirConditionerPowerStatus(serviceId);
   getAirConditionerPowerSavingStatus(serviceId);
   getAirConditionerModeSettingStatus(serviceId);
   getAirConditionerRoomTemperatureStatus(serviceId);
   getAirConditionerAirFlowStatus(serviceId);
-  
+
   var str = '';
   str += '<form name="AirConditionerForm">';
-  
+
   str += '<div>';
   str += '<label for="idPowerState">Power Status:</label>';
   str += '<input type="text" id="idPowerState" width="100%" value="'+ PowerStatus + '" readonly>';
@@ -89,7 +89,7 @@ function showAirConditioner(serviceId) {
   str += '<label for="idTemperatureStatus">Temperature Value (℃):</label>';
   str += '<input type="text" id="idTemperatureStatus" width="100%" value="'+ Temperature + '" readonly>';
   str += '<input id="idTemperature" name="idTemperature" type="range" min="' +
-           TemperatureMin + '" max="' + TemperatureMax + 
+           TemperatureMin + '" max="' + TemperatureMax +
            '" step="1" onchange="showTemperature()" value="'+ Temperature + '" />';
   str += '<input type="button" onclick="doAirConditionerSetTemperatureValue(\'' + serviceId + '\');" value="Set Temperature Value" >';
   str += '</div>';
@@ -107,7 +107,7 @@ function showAirConditioner(serviceId) {
 
   str += '<div>';
   str += '<input id="idAirFlow" name="idAirFlow" type="range" min="' +
-           AirFlowMin + '" max="' + AirFlowMax + 
+           AirFlowMin + '" max="' + AirFlowMax +
            '" step="1" onchange="showAirFlow()" value="'+ AirFlow + '" />';
   str += '<input type="button" onclick="doAirConditionerSetAirFlow(\'' + serviceId + '\');" value="Set Air Flow Value" >';
   str += '</div>';
@@ -509,7 +509,7 @@ function getAirConditionerTemperatureStatus(serviceId) {
 
   var builder = new dConnect.URIBuilder();
   builder.setProfile('airconditioner');
-  builder.setAttribute('temperature');
+  builder.setAttribute('targetTemperature');
   builder.setServiceId(serviceId);
   builder.setAccessToken(accessToken);
   var uri = builder.build();
@@ -549,7 +549,7 @@ function doAirConditionerSetTemperatureValue(serviceId) {
 
   var builder = new dConnect.URIBuilder();
   builder.setProfile('airconditioner');
-  builder.setAttribute('temperature');
+  builder.setAttribute('targetTemperature');
   builder.setServiceId(serviceId);
   builder.addParameter('temperature', Temperature);
   builder.setAccessToken(accessToken);
@@ -639,7 +639,7 @@ function doAirConditionerSetAirFlow(serviceId) {
   builder.setAttribute('airflow');
   builder.setServiceId(serviceId);
   builder.setAccessToken(accessToken);
-  
+
   var AirFlow = Number($('#idAirFlow').val());
   console.log('AirFlow: ', AirFlow);
 
@@ -777,10 +777,10 @@ function showENLControl(serviceId) {
                  sessionKey);
   reloadHeader(btnStr);
   reloadFooter(btnStr);
-  
+
   var str = '';
   str += '<form name="ECHONETLiteForm">';
-  
+
   str += '<div>';
   str += '<label>Get ECHONET Lite Property:</label>';
   str += '<label for="idGetEPC">ECHONET Property (EPC):</label>';
@@ -835,5 +835,3 @@ function doSetENLEPC(serviceId) {
   doAirConditionerECHONETLitePropertySet(serviceId, epc, edt);
 
 }
-
-

@@ -153,16 +153,5 @@ function setTemperature(serviceId) {
  * @param {String} sessionKey セッションKEY
  */
 function doTemperatureMenuBack(serviceId, sessionKey) {
-  showTemperatureProfile(serviceId);
-}
-
-
-/**
- * Backボタン
- *
- * @param {String} serviceId サービスID
- * @param {String} sessionKey セッションKEY
- */
-function doTemperatureBack(serviceId, sessionKey) {
-  searchDevice(serviceId);
+  searchSystem(serviceId);
 }
