@@ -40,7 +40,7 @@ function doDevicePostPairing(serviceId){
     $('#post-pairing').val(json.result);
   };
   console.log('Uri: ', builder.build());
-  dConnect.post(builder.build(),null,null,successCallback,pmAlertError);
+  dConnect.post(builder.build(),null,null,successCallback,devAlertError);
 }
 
 function doDeviceDeletePairing(serviceId){
