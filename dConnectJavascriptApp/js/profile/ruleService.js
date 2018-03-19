@@ -911,7 +911,7 @@ function doSetBatteryTriggerParam(serviceId) {
       localStorage.comparisonRightDataType = 'TypeFloat';
       break;
     case 2:
-      localStorage.comparisonRightDataType = 'TypeString';
+      localStorage.comparisonRightDataType = 'TypeBoolean';
       break;
   }
   
@@ -925,7 +925,7 @@ function doSetBatteryTriggerParam(serviceId) {
   index = document.BatteryForm.patternRest.selectedIndex;
   switch (index) {
     case 1: localStorage.comparisonLeftDataType = 'TypeJsonFloat'; break;
-    case 2: localStorage.comparisonLeftDataType = 'TypeJsonString'; break;
+    case 2: localStorage.comparisonLeftDataType = 'TypeJsonBoolean'; break;
   }
   
   var comparison = document.forms.BatteryForm.patternComparison.value;
